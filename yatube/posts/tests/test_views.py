@@ -8,14 +8,15 @@ User = get_user_model()
 
 
 class PostPagesTests(TestCase):
-
     def setUp(self):
         self.guest_client = Client()
         self.user = User.objects.create_user(username="testuser")
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
         self.group = Group.objects.create(
-            title="testgroup", slug="testgroup", description="Test description"
+            title="testgroup",
+            slug="testgroup",
+            description="Test description"
         )
         self.post = Post.objects.create(
             text="Test text",
@@ -109,3 +110,35 @@ class PostPagesTests(TestCase):
             with self.subTest(value=value):
                 form_field = response.context["form"].fields[value]
                 self.assertIsInstance(form_field, expected)
+
+    def test_create_post_select_group(self):
+        """Проверка, что если при создании поста указать группу,
+        пост появляется на главной странице, на странице выбранной группы"""
+        form_fields = {
+            reverse("posts:index"): Post.objects.get(group=self.post.group),
+            reverse(
+                "posts:group_list", kwargs={"slug": self.group.slug}
+            ): Post.objects.get(group=self.post.group),
+            reverse(
+                "posts:profile", kwargs={"username": self.post.author}
+            ): Post.objects.get(group=self.post.group),
+        }
+        for value, expected in form_fields.items():
+            with self.subTest(value=value):
+                response = self.authorized_client.get(value)
+                form_field = response.context["page_obj"]
+                self.assertIn(expected, form_field)
+
+    def test_post_not_in_inappropriate_group(self):
+        """Проверка, что пост не попал в группу,
+        для которой не был предназначен"""
+        form_fields = {
+            reverse(
+                "posts:group_list", kwargs={"slug": self.group.slug}
+            ): Post.objects.exclude(group=self.post.group),
+        }
+        for value, expected in form_fields.items():
+            with self.subTest(value=value):
+                response = self.authorized_client.get(value)
+                form_field = response.context["page_obj"]
+                self.assertNotIn(expected, form_field)

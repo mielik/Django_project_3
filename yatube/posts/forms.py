@@ -13,6 +13,6 @@ class PostForm(forms.ModelForm):
             'group': _('Группа'),
         }
         help_texts = {
-            'text': _('Text for youtr post'),
+            'text': _('Text for your post'),
             'group': _('Group to which this post belongs to'),
         }
