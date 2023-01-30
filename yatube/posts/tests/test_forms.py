@@ -57,7 +57,7 @@ class PostFormTests(TestCase):
                 text="Test text",
             ).exists()
         )
-        self.assertEqual(HTTPStatus.OK.value, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         new_post = Post.objects.first()
         self.assertEqual(new_post.author, self.user)
         self.assertEqual(new_post.group, self.group)
@@ -85,7 +85,7 @@ class PostFormTests(TestCase):
                 text="New test text",
             ).exists()
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         old_group_response = self.authorized_client.get(
             reverse("posts:group_list", args=(self.group.slug,))
         )
