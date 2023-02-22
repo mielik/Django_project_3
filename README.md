@@ -1,3 +1,6 @@
-# hw04_tests
+# Django project - blog
 
-[![CI](https://github.com/yandex-praktikum/hw04_tests/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw04_tests/actions/workflows/python-app.yml)
+- With the help of sorl-thumbnail, illustrations for posts are displayed.
+- A comment system has been created.
+- Caching of the main page.
+- Testing.
